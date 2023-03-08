@@ -5,27 +5,27 @@ library(tidyverse)
 library(ggthemes)
 library(ggtext)
 
-metro <- read.csv('metro/afluencia_simple.csv')
+metro_desglosado <- read.csv('metro/afluencia_desglosado.csv')
 # metro <- subset(metro, anio==2022)
 
 metro <-metro %>%
  group_by(anio, linea) %>% 
   summarise(afluencia_por_anio = sum(afluencia))
 
-metro <-metro %>%
-  group_by(anio, linea, mes, estacion) %>% 
+metro_desglosado <- metro_desglosado %>%
+  group_by(anio, linea, tipo_pago, mes) %>% 
   summarise(afluencia_por_anio = sum(afluencia))
 
 #metro <- subset(metro, anio==2023)
-metro <- subset(metro, subset = anio == 2019 | anio == 2020 | anio == 2021 | anio == 2022 & linea == "Linea 3")
+metro_desglosado <- subset(metro_desglosado, anio == 2021 & linea == "Linea 3")
 
-ggplot(metro, aes(fill=estacion, y=afluencia_por_anio, x=estacion)) + 
+ggplot(metro_desglosado, aes(fill=tipo_pago, y=afluencia_por_anio, x=tipo_pago)) + 
  geom_bar(position="dodge", stat="identity") +
  facet_wrap(~ mes) +
   labs(x=NULL,
        y=NULL,
-       title = "AFLUENCIA L3 STCM 2022",
-       subtitle = "DESGLOSE POR MES POR ESTACIÓN",
+       title = "AFLUENCIA L3 STCM 2021",
+       subtitle = "DESGLOSE POR MES POR TIPO DE PAGO",
        caption = "<br>**Data:** Portal de datos abiertos CDMX | **Plot:** @el_dato_mx, @foreverpelon") +
   theme_wsj() +
   theme(
@@ -34,6 +34,7 @@ ggplot(metro, aes(fill=estacion, y=afluencia_por_anio, x=estacion)) +
     plot.title = element_text(face = "bold", size = 10),
     plot.subtitle = element_text(size = 8, face = "bold"),
     plot.caption = element_markdown(size = 6),
+    legend.title = element_blank(),
     axis.text = element_blank(),
     axis.text.y = element_blank(),
     axis.text.x = element_blank(),
